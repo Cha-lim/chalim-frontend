@@ -1,4 +1,5 @@
 // flutter
+import 'package:chalim/widgets/chalim_bottom_text.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -6,7 +7,7 @@ import 'dart:async';
 import 'package:chalim/constants/sizes.dart';
 
 // screens
-import 'package:chalim/screens/home_screen.dart';
+import 'package:chalim/screens/language_select_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,7 +22,9 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Timer(const Duration(seconds: 2), () {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+          context,
+          MaterialPageRoute(
+              builder: (context) => const LanguageSelectScreen()));
     });
   }
 
@@ -29,6 +32,10 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: Sizes.size20,
+          vertical: Sizes.size56,
+        ),
         color: Theme.of(context).primaryColor,
         child: SafeArea(
           child: Center(
@@ -49,7 +56,6 @@ class _SplashScreenState extends State<SplashScreen> {
                 Image.asset(
                   'assets/images/logo.png',
                   width: 200,
-                  height: 200,
                 ),
                 const SizedBox(height: Sizes.size20),
                 const Text(
@@ -62,14 +68,8 @@ class _SplashScreenState extends State<SplashScreen> {
                   ),
                 ),
                 const Spacer(),
-                const Text(
-                  'CHALIM',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: Sizes.size28,
-                    fontFamily: 'Myriad Pro',
-                    fontWeight: FontWeight.w400,
-                  ),
+                const ChalimBottomText(
+                  textColor: Colors.white,
                 ),
               ],
             ),

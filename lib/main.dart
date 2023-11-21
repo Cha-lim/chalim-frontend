@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
       title: 'Chalim',
       theme: ThemeData(
         useMaterial3: true,
+        scaffoldBackgroundColor: Colors.white,
         primaryColor: const Color(0xfff64e26),
         fontFamily: 'Myriad Pro',
       ),
