@@ -1,7 +1,11 @@
 // flutter
-import 'package:chalim/screens/home_screen.dart';
-import 'package:chalim/widgets/chalim_bottom_text.dart';
 import 'package:flutter/material.dart';
+
+// screens
+import 'package:chalim/screens/home_screen.dart';
+
+// widgets
+import 'package:chalim/widgets/chalim_bottom_text.dart';
 
 // constants
 import 'package:chalim/constants/sizes.dart';
@@ -67,7 +71,9 @@ class _LanguageSelectScreenState extends State<LanguageSelectScreen> {
                             _onLanguageSelected(language);
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
-                                  builder: (ctx) => const HomeScreen()),
+                                  builder: (ctx) => HomeScreen(
+                                        selectedLanguage: _selectedLanguage,
+                                      )),
                             );
                           },
                         ),

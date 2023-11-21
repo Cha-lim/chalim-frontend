@@ -16,11 +16,22 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Chalim',
       theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: Colors.white,
-        primaryColor: const Color(0xfff64e26),
-        fontFamily: 'Myriad Pro',
-      ),
+          useMaterial3: true,
+          scaffoldBackgroundColor: Colors.white,
+          primaryColor: const Color(0xfff64e26),
+          fontFamily: 'Myriad Pro',
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Color(0xfff64e26),
+            foregroundColor: Colors.white,
+            titleTextStyle: TextStyle(
+              color: Color(0xfff64e26),
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+            iconTheme: IconThemeData(
+              color: Colors.white,
+            ),
+          )),
       home: const SplashScreen(),
     );
   }
