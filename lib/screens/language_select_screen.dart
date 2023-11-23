@@ -1,6 +1,9 @@
 // flutter
 import 'package:flutter/material.dart';
 
+// libraries
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 // screens
 import 'package:chalim/screens/home_screen.dart';
 
@@ -10,33 +13,29 @@ import 'package:chalim/widgets/chalim_bottom_text.dart';
 // constants
 import 'package:chalim/constants/sizes.dart';
 
-// models
-import 'package:chalim/models/languages.dart';
+// models & providers
+import 'package:chalim/providers/language_provider.dart';
 
-class LanguageSelectScreen extends StatefulWidget {
+class LanguageSelectScreen extends ConsumerStatefulWidget {
   const LanguageSelectScreen({super.key});
 
   @override
-  State<LanguageSelectScreen> createState() => _LanguageSelectScreenState();
+  ConsumerState<LanguageSelectScreen> createState() =>
+      _LanguageSelectScreenState();
 }
 
-class _LanguageSelectScreenState extends State<LanguageSelectScreen> {
-  Language _selectedLanguage = Language.english;
-
-  var languages = [
-    Language.english,
-    Language.japanese,
-    Language.chinese,
-  ];
-
-  void _onLanguageSelected(Language language) {
-    setState(() {
-      _selectedLanguage = language;
-    });
+class _LanguageSelectScreenState extends ConsumerState<LanguageSelectScreen> {
+  @override
+  void initState() {
+    super.initState();
+    ref.read(languageProvider);
+    ref.read(languageSelectProvider);
   }
 
   @override
   Widget build(BuildContext context) {
+    final selectedLanguage = ref.watch(languageSelectProvider);
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -51,29 +50,33 @@ class _LanguageSelectScreenState extends State<LanguageSelectScreen> {
                 const Spacer(),
                 ListView(
                   shrinkWrap: true,
-                  children: languages
+                  children: ref
+                      .read(languageProvider)
                       .map(
                         (language) => ListTile(
                           title: Text(
                             language.toString().split('.').last,
                             style: TextStyle(
                               fontFamily: 'Myriad Pro',
-                              fontSize: language == _selectedLanguage
+                              fontSize: language == selectedLanguage
                                   ? Sizes.size40
                                   : Sizes.size32,
-                              fontWeight: language == _selectedLanguage
+                              fontWeight: language == selectedLanguage
                                   ? FontWeight.bold
                                   : FontWeight.normal,
                             ),
                             textAlign: TextAlign.center,
                           ),
                           onTap: () {
-                            _onLanguageSelected(language);
+                            ref
+                                .read(languageSelectProvider.notifier)
+                                .setLanguage(language);
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
-                                  builder: (ctx) => HomeScreen(
-                                        selectedLanguage: _selectedLanguage,
-                                      )),
+                                builder: (ctx) => HomeScreen(
+                                  selectedLanguage: selectedLanguage,
+                                ),
+                              ),
                             );
                           },
                         ),
