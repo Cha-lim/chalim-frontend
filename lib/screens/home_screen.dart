@@ -1,20 +1,22 @@
 // flutter
-import 'package:chalim/screens/camera_screen.dart';
-import 'package:chalim/widgets/chalim_bottom_text.dart';
 import 'package:flutter/material.dart';
 
 // libraries
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // screens
+import 'package:chalim/screens/camera_screen.dart';
 
 // widgets
+import 'package:chalim/widgets/chalim_bottom_text.dart';
 
 // constants
 import 'package:chalim/constants/sizes.dart';
 
 // models
-import 'package:chalim/models/languages.dart';
+
+// providers
+import 'package:chalim/providers/language_provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({
@@ -52,8 +54,7 @@ class HomeScreen extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (ctx) => CameraScreen(
-                                  selectedLanguage: selectedLanguage),
+                              builder: (ctx) => const CameraScreen(),
                             ),
                           );
                         },
