@@ -1,11 +1,16 @@
 // flutter
 import 'package:flutter/material.dart';
 
+// libraries
+import 'package:camera/camera.dart';
+
 // screens
 import 'package:chalim/screens/splash_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
