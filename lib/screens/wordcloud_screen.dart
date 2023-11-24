@@ -21,29 +21,14 @@ import 'package:chalim/constants/gaps.dart';
 // providers
 import 'package:chalim/providers/camera_provider.dart';
 
-class CameraScreen extends ConsumerStatefulWidget {
-  const CameraScreen({super.key});
+class WordcloudScreen extends ConsumerStatefulWidget {
+  const WordcloudScreen({super.key});
 
   @override
-  ConsumerState<CameraScreen> createState() => _CameraScreenState();
+  ConsumerState<WordcloudScreen> createState() => _WordcloudScreenState();
 }
 
-class _CameraScreenState extends ConsumerState<CameraScreen> {
-  @override
-  void initState() {
-    super.initState();
-    ref.read(cameraProvider);
-  }
-
-  @override
-  void dispose() {
-    ref.read(cameraProvider).whenData((cameraController) async {
-      await CameraInitializer.disposeCamera(cameraController);
-    });
-
-    super.dispose();
-  }
-
+class _WordcloudScreenState extends ConsumerState<WordcloudScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,25 +48,6 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
       ),
       body: Stack(
         children: [
-          SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: ref.watch(cameraProvider).when(
-              data: (cameraController) {
-                return CameraPreview(cameraController);
-              },
-              loading: () {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              },
-              error: (error, stackTrace) {
-                return const Center(
-                  child: Text('Error'),
-                );
-              },
-            ),
-          ),
           Positioned(
             left: MediaQuery.of(context).size.width / 2 - 50,
             bottom: 30,
