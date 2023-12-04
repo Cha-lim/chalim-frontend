@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:chalim/constants/gaps.dart';
 import 'package:chalim/constants/sizes.dart';
 import 'package:chalim/screens/map_screen.dart';
@@ -12,10 +13,10 @@ import 'dart:io';
 class TranslateScreen extends StatefulWidget {
   const TranslateScreen({
     super.key,
-    required this.imagePath,
+    required this.image,
   });
 
-  final String imagePath;
+  final XFile image;
 
   @override
   State<TranslateScreen> createState() => _TranslateScreenState();
@@ -33,28 +34,38 @@ class _TranslateScreenState extends State<TranslateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: const SelectLanguageButton(),
-          actions: [
-            IconButton(
-              onPressed: () {
-                _navigateToWordcloudScreen(context);
-              },
-              icon: const FaIcon(
-                FontAwesomeIcons.solidStar,
-                size: Sizes.size28,
-              ),
-            ),
-            Gaps.h10,
-            const FaIcon(
-              FontAwesomeIcons.ellipsis,
+      appBar: AppBar(
+        centerTitle: true,
+        title: const SelectLanguageButton(),
+        actions: [
+          IconButton(
+            onPressed: () {
+              _navigateToWordcloudScreen(context);
+            },
+            icon: const FaIcon(
+              FontAwesomeIcons.solidStar,
               size: Sizes.size28,
             ),
-            Gaps.h10,
-          ],
-          elevation: 5,
-        ),
-        body: Image.file(File(widget.imagePath)));
+          ),
+          Gaps.h10,
+          const FaIcon(
+            FontAwesomeIcons.ellipsis,
+            size: Sizes.size28,
+          ),
+          Gaps.h10,
+        ],
+        elevation: 5,
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Image.file(
+              File(widget.image.path),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

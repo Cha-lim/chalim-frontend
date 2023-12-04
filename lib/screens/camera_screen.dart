@@ -1,20 +1,22 @@
 // flutter
+import 'package:flutter/material.dart';
+import 'dart:convert';
+
+// libraries
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:camera/camera.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+
+// screens
 import 'package:chalim/screens/map_screen.dart';
 import 'package:chalim/screens/translate_screen.dart';
+
+// widgets
 import 'package:chalim/widgets/camera_shot_button.dart';
 import 'package:chalim/widgets/photo_icon.dart';
 import 'package:chalim/widgets/select_language_button.dart';
-
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// libraries
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:camera/camera.dart';
-
-// screens
-
-// widgets
 
 // constants
 import 'package:chalim/constants/sizes.dart';
@@ -33,6 +35,9 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
 
+  XFile? _image;
+  final ImagePicker _picker = ImagePicker();
+
   void _onCameraButtonPressed() async {
     // Take the Picture in a try / catch block. If anything goes wrong,
     // catch the error.
@@ -46,13 +51,16 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
 
       if (!mounted) return;
 
+      var url =
+          Uri.parse('https://1100-114-206-33-35.ngrok.io/restaurant-name');
+
       // If the picture was taken, display it on a new screen.
       await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => TranslateScreen(
             // Pass the automatically generated path to
             // the DisplayPictureScreen widget.
-            imagePath: image.path,
+            image: image,
           ),
         ),
       );
@@ -103,6 +111,27 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     );
   }
 
+  //이미지를 가져오는 함수
+  Future _getImage(ImageSource imageSource) async {
+    //pickedFile에 ImagePicker로 가져온 이미지가 담긴다.
+    final XFile? pickedFile = await _picker.pickImage(source: imageSource);
+    if (pickedFile != null) {
+      setState(() {
+        _image = XFile(pickedFile.path); //가져온 이미지를 _image에 저장
+      });
+    }
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => TranslateScreen(
+          // Pass the automatically generated path to
+          // the DisplayPictureScreen widget.
+          image: _image!,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -142,10 +171,15 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
               child: const CameraShotButton(),
             ),
           ),
-          const Positioned(
+          Positioned(
             bottom: 50,
             left: 40,
-            child: PhotoIcon(),
+            child: GestureDetector(
+              onTap: () {
+                _getImage(ImageSource.gallery);
+              },
+              child: const PhotoIcon(),
+            ),
           )
         ],
       ),
