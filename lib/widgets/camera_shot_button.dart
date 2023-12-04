@@ -5,9 +5,9 @@ class CameraShotButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     return Container(
-      width: 100,
-      height: 100,
+      width: width * 0.2,
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0), // 내부 원의 색상
         shape: BoxShape.circle, // 원형 모양
@@ -17,12 +17,15 @@ class CameraShotButton extends StatelessWidget {
         ),
       ),
       child: Center(
-        child: Container(
-          width: 85,
-          height: 85,
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor, // 외부 원의 색상
-            shape: BoxShape.circle, // 원형 모양
+        child: FractionallySizedBox(
+          widthFactor: 0.9,
+          child: Container(
+            width: 85,
+            height: 85,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor, // 외부 원의 색상
+              shape: BoxShape.circle, // 원형 모양
+            ),
           ),
         ),
       ),

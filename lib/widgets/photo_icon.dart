@@ -1,3 +1,4 @@
+import 'package:chalim/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -9,7 +10,7 @@ class PhotoIcon extends StatelessWidget {
     return Container(
       child: FaIcon(
         FontAwesomeIcons.solidImage,
-        size: 50,
+        size: Sizes.size44,
         color: Theme.of(context).primaryColor,
       ),
     );
