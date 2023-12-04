@@ -13,6 +13,12 @@ import 'package:chalim/providers/language_provider.dart';
 class SelectLanguageButton extends ConsumerWidget {
   const SelectLanguageButton({super.key});
 
+  void _onChangeLanguage(Language? newLanguage, WidgetRef ref) {
+    if (newLanguage != null) {
+      ref.read(languageSelectProvider.notifier).setLanguage(newLanguage);
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Center(
@@ -40,7 +46,7 @@ class SelectLanguageButton extends ConsumerWidget {
                   (language) => DropdownMenuItem(
                     value: language,
                     child: Text(
-                      language.toString().split('.').last,
+                      '${language.toString().split('.').last[0].toUpperCase()}${language.toString().split('.').last.substring(1).toLowerCase()}',
                       style: const TextStyle(
                         fontFamily: 'Myriad Pro',
                         color: Colors.white,
@@ -58,11 +64,7 @@ class SelectLanguageButton extends ConsumerWidget {
             iconSize: Sizes.size24,
             style: const TextStyle(color: Colors.white),
             onChanged: (newLanguage) {
-              if (newLanguage != null) {
-                ref
-                    .read(languageSelectProvider.notifier)
-                    .setLanguage(newLanguage);
-              }
+              _onChangeLanguage(newLanguage, ref);
             },
           ),
         ),
