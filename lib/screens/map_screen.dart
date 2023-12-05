@@ -1,115 +1,124 @@
+import 'package:chalim/constants/gaps.dart';
 import 'package:chalim/constants/sizes.dart';
+import 'package:chalim/services/current_location.dart';
+import 'package:chalim/services/restaurants_fetching.dart';
+import 'package:chalim/widgets/loading_bar.dart';
+import 'package:chalim/widgets/select_language_button.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'dart:convert';
 
-import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'package:location/location.dart';
-import 'package:http/http.dart' as http;
-
-class MapScreen extends StatefulWidget {
+class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
 
-  @override
-  State<MapScreen> createState() => _MapScreenState();
-}
-
-class _MapScreenState extends State<MapScreen> {
-  final bool _isCurrentLocationLoading = true;
-  LocationData? _currentLocation;
-
-  @override
-  void initState() {
-    super.initState();
-    // print('initial!');
-    // _getCurrentLocation().then((locationData) {
-    //   setState(() {
-    //     _currentLocation = locationData;
-    //     _isCurrentLocationLoading = false;
-    //     print('current location: $_currentLocation');
-    //   });
-
-    //   _fetchRestaurants(locationData!.latitude, locationData.longitude);
-    // });
-
-    _fetchRestaurants(37.6040015, 127.0657662);
-  }
-
-  Future<void> _fetchRestaurants(double latitude, double longitude) async {
-    var url = Uri.parse('https://1100-114-206-33-35.ngrok.io/restaurant-name');
-
-    var response = await http.post(
-      url,
-      headers: {
-        "accept": "application/json",
-        "Content-Type": "application/json",
-      },
-      body: json.encode({
-        'keyword': '김밥',
-        'y': latitude,
-        'x': longitude,
-      }),
+  void _onRestaurantTapped(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => Container(),
+      ),
     );
-
-    if (response.statusCode == 200) {
-      var responseBody = utf8.decode(response.bodyBytes);
-      var restaurants = jsonDecode(responseBody);
-      print('restaurants: $restaurants');
-    } else {
-      print('Request failed with status: ${response.statusCode}.');
-      print('Request failed with body: ${response.body}');
-      // 사용자에게 오류 메시지를 표시하는 로직을 추가할 수 있습니다.
-    }
-  }
-
-  Future<LocationData?> _getCurrentLocation() async {
-    Location location = Location();
-
-    bool serviceEnabled;
-    PermissionStatus permissionGranted;
-    LocationData? locationData;
-
-    // 서비스가 가능한지 확인하는 코드
-    serviceEnabled = await location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
-      if (!serviceEnabled) {
-        print('Service is not enabled');
-        return null;
-      }
-    }
-
-    // 사용자의 허락이 떨어졌는지 확인하는 코드
-    permissionGranted = await location.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) {
-        print('Permission is not granted');
-        return null;
-      }
-    }
-
-    locationData = await location.getLocation();
-
-    return locationData;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: _isCurrentLocationLoading
-            ? CircularProgressIndicator(
-                color: Theme.of(context).primaryColor,
-              )
-            : const Text(
-                'Map',
+      appBar: AppBar(
+        centerTitle: true,
+        title: const SelectLanguageButton(),
+        actions: const [
+          FaIcon(
+            FontAwesomeIcons.ellipsis,
+            size: Sizes.size28,
+          ),
+          Gaps.h10,
+        ],
+      ),
+      backgroundColor: Theme.of(context).primaryColor,
+      body: FutureBuilder(
+        future: LocationFetching.getCurrentLocation(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const LoadingBar(
+              message: '현재 위치를 가져오는 중입니다.',
+            );
+          }
+          if (snapshot.hasError) {
+            return const Center(
+              child: Text(
+                '현재 위치를 가져오지 못했습니다.',
                 style: TextStyle(
-                    fontSize: Sizes.size32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black),
+                  color: Colors.white,
+                ),
               ),
+            );
+          }
+
+          final location = snapshot.data;
+
+          print('location: $location');
+
+          if (location == null) {
+            return const Center(
+              child: Text(
+                'Unable to determine location',
+              ),
+            );
+          }
+
+          return FutureBuilder(
+            future: RestaurantsFetching.fetchRestaurants(
+              keyword: '김밥',
+              lat: location['latitude']!,
+              long: location['longitude']!,
+            ),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const LoadingBar(
+                  message: '주변 음식점을 가져오는 중입니다.',
+                );
+              }
+              if (snapshot.hasError || !snapshot.hasData) {
+                return const Center(
+                    child: Text(
+                  '주변 음식점을 가져오지 못했어요.',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ));
+              }
+              final restaurants = snapshot.data!;
+
+              print('restaurants: $restaurants');
+
+              return ListView.separated(
+                separatorBuilder: (context, index) => const Divider(
+                  color: Colors.white,
+                ),
+                itemCount: restaurants.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      _onRestaurantTapped(context);
+                    },
+                    child: ListTile(
+                      title: Text(
+                        restaurants[index].name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Text('${restaurants[index].distance}m',
+                          style: const TextStyle(
+                            color: Colors.white,
+                          )),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
       ),
     );
   }

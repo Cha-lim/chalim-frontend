@@ -12,6 +12,12 @@ class LanguageSelectProvider extends StateNotifier<Language> {
   void setLanguage(Language language) {
     state = language;
   }
+
+  String getLanguage() {
+    // '${language.toString().split('.').last[0].toUpperCase()}${language.toString().split('.').last.substring(1).toLowerCase()}'
+    return state.toString().split('.').last[0].toUpperCase() +
+        state.toString().split('.').last.substring(1).toLowerCase();
+  }
 }
 
 final languageSelectProvider =
