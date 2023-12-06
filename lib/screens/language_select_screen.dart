@@ -55,7 +55,7 @@ class _LanguageSelectScreenState extends ConsumerState<LanguageSelectScreen> {
                       .map(
                         (language) => ListTile(
                           title: Text(
-                            language.toString().split('.').last,
+                            '${language.toString().split('.').last[0].toUpperCase()}${language.toString().split('.').last.substring(1).toLowerCase()}',
                             style: TextStyle(
                               fontFamily: 'Myriad Pro',
                               fontSize: language == selectedLanguage

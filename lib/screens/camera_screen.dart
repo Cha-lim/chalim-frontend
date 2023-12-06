@@ -1,12 +1,11 @@
 // flutter
 import 'package:flutter/material.dart';
-import 'dart:convert';
 
 // libraries
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:camera/camera.dart';
-import 'package:http/http.dart' as http;
+
 import 'package:image_picker/image_picker.dart';
 
 // screens
@@ -50,9 +49,6 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
       final image = await _controller.takePicture();
 
       if (!mounted) return;
-
-      var url =
-          Uri.parse('https://1100-114-206-33-35.ngrok.io/restaurant-name');
 
       // If the picture was taken, display it on a new screen.
       await Navigator.of(context).push(
