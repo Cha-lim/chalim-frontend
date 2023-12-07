@@ -116,7 +116,10 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
         _image = XFile(pickedFile.path); //가져온 이미지를 _image에 저장
       });
     }
-
+    // 이미지를 선택하지 않으면 null이 된다.
+    if (_image == null) {
+      return;
+    }
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => TranslateScreen(

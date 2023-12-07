@@ -1,16 +1,30 @@
-import 'package:camera/camera.dart';
-import 'package:chalim/constants/gaps.dart';
-import 'package:chalim/constants/sizes.dart';
-import 'package:chalim/screens/map_screen.dart';
-import 'package:chalim/widgets/select_language_button.dart';
-
+// flutter
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-import 'dart:async';
 import 'dart:io';
 
-class TranslateScreen extends StatefulWidget {
+// libraries
+import 'package:camera/camera.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+// screens
+import 'package:chalim/screens/map_screen.dart';
+
+// widgets
+import 'package:chalim/widgets/select_language_button.dart';
+import 'package:chalim/widgets/loading_bar.dart';
+
+// constants
+import 'package:chalim/constants/sizes.dart';
+import 'package:chalim/constants/gaps.dart';
+
+// services
+import 'package:chalim/services/translate_image.dart';
+
+// providers
+import 'package:chalim/providers/language_provider.dart';
+
+class TranslateScreen extends ConsumerStatefulWidget {
   const TranslateScreen({
     super.key,
     required this.image,
@@ -19,10 +33,10 @@ class TranslateScreen extends StatefulWidget {
   final XFile image;
 
   @override
-  State<TranslateScreen> createState() => _TranslateScreenState();
+  ConsumerState<TranslateScreen> createState() => _TranslateScreenState();
 }
 
-class _TranslateScreenState extends State<TranslateScreen> {
+class _TranslateScreenState extends ConsumerState<TranslateScreen> {
   void _navigateToWordcloudScreen(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -34,6 +48,7 @@ class _TranslateScreenState extends State<TranslateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         centerTitle: true,
         title: const SelectLanguageButton(),
@@ -56,15 +71,54 @@ class _TranslateScreenState extends State<TranslateScreen> {
         ],
         elevation: 5,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Image.file(
-              File(widget.image.path),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ],
+      body: FutureBuilder(
+        future: TranslateImage.translateImage(
+          widget.image,
+          ref.read(languageSelectProvider),
+        ),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const LoadingBar(
+              message: '이미지를 번역하는 중입니다.',
+            );
+          }
+          if (!snapshot.hasData || snapshot.hasError) {
+            return const Text('오류가 발생했습니다.');
+          }
+
+          var boxes = snapshot.data!;
+          return Stack(
+            children: [
+              Positioned.fill(
+                child: Image.file(
+                  File(widget.image.path),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              ...boxes.map(
+                (box) {
+                  return Positioned(
+                    left: box.points[0][0].toDouble(),
+                    top: box.points[0][1].toDouble(),
+                    child: Container(
+                      width: (box.points[1][0] - box.points[0][0]).toDouble(),
+                      height: (box.points[3][1] - box.points[0][1]).toDouble(),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.red, width: 3),
+                      ),
+                      child: Text(
+                        box.transcription,
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              )
+            ],
+          );
+        },
       ),
     );
   }
