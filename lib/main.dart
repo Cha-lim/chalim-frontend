@@ -1,11 +1,10 @@
 // flutter
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 // libraries
-import 'package:camera/camera.dart';
-import 'package:flutter_naver_map/flutter_naver_map.dart';
+
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // screens
@@ -13,12 +12,7 @@ import 'package:chalim/screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await NaverMapSdk.instance.initialize(
-      clientId: '5b9anyynki',
-      onAuthFailed: (error) {
-        print('Map auth error: ${error.message}');
-      });
+  await dotenv.load(fileName: ".env");
 
   runApp(const ProviderScope(child: MyApp()));
 }

@@ -19,7 +19,7 @@ class LoadingBar extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           LoadingAnimationWidget.dotsTriangle(
-            color: Colors.white,
+            color: Theme.of(context).primaryColor,
             size: Sizes.size32,
           ),
           Gaps.v10,
