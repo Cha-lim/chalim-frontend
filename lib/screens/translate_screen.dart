@@ -79,7 +79,6 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
     Language selectedLanguage = ref.watch(languageSelectProvider);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         centerTitle: true,
         title: const SelectLanguageButton(),
