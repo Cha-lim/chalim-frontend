@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:camera/camera.dart';
 import 'package:chalim/models/box.dart';
 import 'package:dio/dio.dart';
@@ -10,13 +12,13 @@ class TranslateImage {
   static const uuid = Uuid();
 
   static final Dio dio = Dio(BaseOptions(
-    baseUrl: 'https://c4f5-180-69-240-120.ngrok.io',
-    connectTimeout: const Duration(seconds: 5),
-    receiveTimeout: const Duration(seconds: 3),
+    baseUrl: 'https://053c-180-69-240-120.ngrok.io',
+    connectTimeout: const Duration(seconds: 30),
+    receiveTimeout: const Duration(seconds: 30),
+    persistentConnection: true,
   ));
 
-  static Future<Map<String, dynamic>> translateImage(
-      XFile image, String language) async {
+  static Future<dynamic> translateImage(XFile image, String language) async {
     FormData formData = FormData.fromMap({
       "imageName": "${uuid.v4()}.jpg",
       "imageFile": await MultipartFile.fromFile(
@@ -24,12 +26,16 @@ class TranslateImage {
       )
     });
 
-    // final uploadUrl = '$baseUrl/translate/$lang';
-
     try {
-      // Response response = await dio.request('/translate/$language',
-      //     data: formData, options: Options(method: 'POST'));
-      return {
+      Response response = await dio.request(
+        '/translate/$language',
+        data: formData,
+        options: Options(method: 'POST'),
+        onReceiveProgress: (int sent, int total) {
+          print('sent: $sent, total: $total');
+        },
+      );
+      /* return {
         "imageName": "20231208_213413.jpg",
         "menuName": [
           {
@@ -224,20 +230,19 @@ class TranslateImage {
             "priceValue": "10"
           }
         ]
-      };
-      // if (response.statusCode == 200) {
-      //   print("File upload response: ${response.data}");
+      }; */
+      if (response.statusCode == 200) {
+        print('menuName: ${response.data['menuName']}');
+        print('menuPrice: ${response.data['price']}');
 
-      //   // List<Box> menuBoxes = List<Box>.from(
-      //   //     response.data['menuName'].map((x) => Box.fromJson(x)));
-      //   // List<Box> priceBoxes = List<Box>.from(
-      //   //     response.data['menuPrice'].map((x) => Box.fromJson(x)));
-      //   // Map<String, dynamic> boxes = {'menus': menuBoxes, 'prices': priceBoxes};
-      //   // return boxes;
-      // } else {
-      //   print("Error during file upload: ${response.statusCode}");
-      //   return {};
-      // }
+        return {
+          'menu': response.data['menuName'],
+          'price': response.data['price'],
+        };
+      } else {
+        print("Error during file upload: ${response.statusCode}");
+        return {};
+      }
     } catch (e) {
       print("Error during file upload: $e");
       return {};

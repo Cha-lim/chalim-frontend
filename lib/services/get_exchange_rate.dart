@@ -11,7 +11,7 @@ class ExchangeRate {
     receiveTimeout: const Duration(seconds: 3),
   ));
 
-  static Future<Map<String, dynamic>> getExchangeRate() async {
+  static Future<List<dynamic>> getExchangeRate() async {
     try {
       Response response = await dio.request(
         '',
@@ -21,10 +21,12 @@ class ExchangeRate {
         },
         options: Options(method: 'GET'),
       );
+      print(response.realUri);
+      print(response.data);
       return response.data;
     } catch (e) {
       print(e);
-      return {};
+      return [];
     }
   }
 }
