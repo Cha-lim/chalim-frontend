@@ -108,7 +108,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   }
 
   //이미지를 가져오는 함수
-  Future _getImage(ImageSource imageSource) async {
+  void _getImage(ImageSource imageSource) async {
     //pickedFile에 ImagePicker로 가져온 이미지가 담긴다.
     final XFile? pickedFile = await _picker.pickImage(source: imageSource);
     if (pickedFile != null) {
@@ -120,7 +120,9 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     if (_image == null) {
       return;
     }
-    await Navigator.of(context).push(
+
+    if (!mounted) return; // 이미지를 선택하지 않으면 null이 된다.
+    Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => TranslateScreen(
           // Pass the automatically generated path to

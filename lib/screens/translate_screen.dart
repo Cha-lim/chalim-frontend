@@ -1,4 +1,5 @@
 // flutter
+import 'package:chalim/services/get_exchange_rate.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
@@ -47,6 +48,8 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Language selectedLanguage = ref.watch(languageSelectProvider);
+
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
@@ -74,7 +77,7 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
       body: FutureBuilder(
         future: TranslateImage.translateImage(
           widget.image,
-          ref.read(languageSelectProvider),
+          selectedLanguage.name.toLowerCase(),
         ),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -86,36 +89,58 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
             return const Text('오류가 발생했습니다.');
           }
 
-          var boxes = snapshot.data!;
+          final boxes = snapshot.data;
+
+          final menuBoxes = boxes?['menuName'] as List<dynamic>;
+          // final priceBoxes = boxes?['price'] as List<dynamic>;
+
+          final deviceWidth = MediaQuery.of(context).size.width;
+          final deviceHeight = MediaQuery.of(context).size.height;
+          final appBarHeight = Scaffold.of(context).appBarMaxHeight;
+
+          print(deviceWidth);
+          print(deviceHeight);
+          print(Scaffold.of(context).appBarMaxHeight);
+          print(MediaQuery.of(context).size.aspectRatio);
+
+          // print(boxes[0].points[0][0]);
           return Stack(
             children: [
               Positioned.fill(
                 child: Image.file(
                   File(widget.image.path),
-                  fit: BoxFit.cover,
+                  width: deviceWidth,
+                  height: deviceHeight - appBarHeight!,
+                  fit: BoxFit.fill,
                 ),
               ),
-              ...boxes.map(
-                (box) {
-                  return Positioned(
-                    left: box.points[0][0].toDouble(),
-                    top: box.points[0][1].toDouble(),
-                    child: Container(
-                      width: (box.points[1][0] - box.points[0][0]).toDouble(),
-                      height: (box.points[3][1] - box.points[0][1]).toDouble(),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.red, width: 3),
-                      ),
+              ...menuBoxes.map((menuBox) {
+                return Positioned(
+                  left:
+                      menuBox['points'][3][0].toDouble() * (deviceWidth / 3024),
+                  top: menuBox['points'][3][1].toDouble() *
+                          ((deviceHeight - appBarHeight) / 4032) -
+                      20,
+                  child: Container(
+                    width: (menuBox['points'][1][0].toDouble() -
+                            menuBox['points'][0][0].toDouble()) *
+                        (deviceWidth / 3024),
+                    height: (menuBox['points'][2][1].toDouble() -
+                            menuBox['points'][1][1].toDouble()) *
+                        ((deviceHeight - appBarHeight) / 4032),
+                    color: Colors.white.withOpacity(0.5),
+                    child: Center(
                       child: Text(
-                        box.transcription,
+                        menuBox['transcription'],
                         style: const TextStyle(
-                          color: Colors.white,
+                          fontSize: Sizes.size20,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  );
-                },
-              )
+                  ),
+                );
+              })
             ],
           );
         },
