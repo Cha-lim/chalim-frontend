@@ -25,8 +25,8 @@ class LoadingBar extends StatelessWidget {
           Gaps.v10,
           Text(
             message,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
               fontSize: Sizes.size20,
             ),
           ),

@@ -12,19 +12,22 @@ class TranslateImage {
   static const uuid = Uuid();
 
   static final Dio dio = Dio(BaseOptions(
-    baseUrl: 'https://053c-180-69-240-120.ngrok.io',
+    baseUrl: 'https://f55e-180-69-240-120.ngrok.io',
     connectTimeout: const Duration(seconds: 30),
-    receiveTimeout: const Duration(seconds: 30),
+    receiveTimeout: const Duration(minutes: 2),
     persistentConnection: true,
   ));
 
   static Future<dynamic> translateImage(XFile image, String language) async {
+    final imageFileName = uuid.v4();
     FormData formData = FormData.fromMap({
-      "imageName": "${uuid.v4()}.jpg",
+      "imageName": "$imageFileName.jpg",
       "imageFile": await MultipartFile.fromFile(
         image.path,
       )
     });
+
+    print(imageFileName);
 
     try {
       Response response = await dio.request(

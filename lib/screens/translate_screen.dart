@@ -1,5 +1,6 @@
 // flutter
 import 'package:chalim/services/get_exchange_rate.dart';
+import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
@@ -40,13 +41,21 @@ class TranslateScreen extends ConsumerStatefulWidget {
 }
 
 class _TranslateScreenState extends ConsumerState<TranslateScreen> {
-  late final int _imageWidth;
-  late final int _imageHeight;
+  late final num _imageWidth;
+  late final num _imageHeight;
+
+  late Future<dynamic> _translateFuture;
+
+  num _exchangedPrice = 0;
 
   @override
   void initState() {
     super.initState();
     _getImageSize();
+    _translateFuture = TranslateImage.translateImage(
+      widget.image,
+      ref.read(languageSelectProvider).name.toLowerCase(),
+    );
   }
 
   void _getImageSize() async {
@@ -69,9 +78,31 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
     );
   }
 
-  void _onTapPriceBox() async {
-    final exchangeRate = await ExchangeRate.getExchangeRate();
-    print(exchangeRate);
+  void _onTapPriceBox(dynamic priceValue) async {
+    print('priceValue: $priceValue');
+
+    print(ref.read(languageSelectProvider).name);
+
+    num exchangedPrice = 0;
+    if (ref.read(languageSelectProvider).name == 'english') {
+      exchangedPrice = await ExchangeRate.getExchangeRate(
+        to: 'usd',
+        amount: priceValue.toString(),
+      );
+    } else if (ref.read(languageSelectProvider).name == 'japanese') {
+      exchangedPrice = await ExchangeRate.getExchangeRate(
+        to: 'jpy',
+        amount: priceValue.toString(),
+      );
+    } else if (ref.read(languageSelectProvider).name == 'chinese') {
+      exchangedPrice = await ExchangeRate.getExchangeRate(
+        to: 'cny',
+        amount: priceValue.toString(),
+      );
+    }
+    setState(() {
+      _exchangedPrice = exchangedPrice;
+    });
   }
 
   @override
@@ -102,10 +133,7 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
         elevation: 5,
       ),
       body: FutureBuilder(
-        future: TranslateImage.translateImage(
-          widget.image,
-          selectedLanguage.name.toLowerCase(),
-        ),
+        future: _translateFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const LoadingBar(
@@ -122,8 +150,6 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
 
           final boxes = snapshot.data;
 
-          print('boxes: $boxes');
-
           final menuBoxes = boxes['menu'] as List<dynamic>;
           final priceBoxes = boxes['price'] as List<dynamic>;
 
@@ -131,6 +157,9 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
           final deviceHeight = MediaQuery.of(context).size.height;
           final appBarHeight = Scaffold.of(context).appBarMaxHeight;
 
+          final double scaleFactorWidth = deviceWidth / _imageWidth;
+          final double scaleFactorHeight =
+              (deviceHeight - appBarHeight!) / _imageHeight;
           // print(boxes[0].points[0][0]);
           return Stack(
             children: [
@@ -138,57 +167,32 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
                 child: Image.file(
                   File(widget.image.path),
                   width: deviceWidth,
-                  height: deviceHeight - appBarHeight!,
+                  height: deviceHeight - appBarHeight,
                   fit: BoxFit.fill,
                 ),
               ),
               ...menuBoxes.map((menuBox) {
+                final double left = menuBox['points'][0][0] * scaleFactorWidth;
+                final double top = menuBox['points'][0][1] * scaleFactorHeight;
+                final double boxWidth =
+                    (menuBox['points'][1][0] - menuBox['points'][0][0]) *
+                        scaleFactorWidth;
+                final double boxHeight =
+                    (menuBox['points'][2][1] - menuBox['points'][0][1]) *
+                        scaleFactorHeight;
+
                 return Positioned(
-                  left:
-                      menuBox['points'][3][0].toDouble() * (deviceWidth / 3024),
-                  top: menuBox['points'][3][1].toDouble() *
-                          ((deviceHeight - appBarHeight) / 4032) -
-                      20,
-                  child: Container(
-                    width: (menuBox['points'][1][0].toDouble() -
-                            menuBox['points'][0][0].toDouble()) *
-                        (deviceWidth / 3024),
-                    height: (menuBox['points'][2][1].toDouble() -
-                            menuBox['points'][1][1].toDouble()) *
-                        ((deviceHeight - appBarHeight) / 4032),
-                    color: Colors.white.withOpacity(0.5),
-                    child: Center(
-                      child: Text(
-                        menuBox['transcription'],
-                        style: const TextStyle(
-                          fontSize: Sizes.size20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }),
-              ...priceBoxes.map((priceBox) {
-                return Positioned(
-                  left: priceBox['points'][3][0].toDouble() *
-                      (deviceWidth / 3024),
-                  top: priceBox['points'][3][1].toDouble() *
-                          ((deviceHeight - appBarHeight) / _imageWidth) -
-                      20,
+                  left: left,
+                  top: top,
                   child: GestureDetector(
-                    onTap: _onTapPriceBox,
+                    onTap: () {},
                     child: Container(
-                      width: (priceBox['points'][1][0].toDouble() -
-                              priceBox['points'][0][0].toDouble()) *
-                          (deviceWidth / 3024),
-                      height: (priceBox['points'][2][1].toDouble() -
-                              priceBox['points'][1][1].toDouble()) *
-                          ((deviceHeight - appBarHeight) / _imageHeight),
+                      width: boxWidth,
+                      height: boxHeight,
                       color: Colors.white.withOpacity(0.5),
                       child: Center(
                         child: Text(
-                          priceBox['priceValue'] + '원',
+                          menuBox['transcription'],
                           style: const TextStyle(
                             fontSize: Sizes.size20,
                             fontWeight: FontWeight.bold,
@@ -198,7 +202,73 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
                     ),
                   ),
                 );
-              })
+              }).toList(),
+              ...priceBoxes.map((priceBox) {
+                final double left = priceBox['points'][0][0] * scaleFactorWidth;
+                final double top = priceBox['points'][0][1] * scaleFactorHeight;
+                final double boxWidth =
+                    (priceBox['points'][1][0] - priceBox['points'][0][0]) *
+                        scaleFactorWidth;
+                final double boxHeight =
+                    (priceBox['points'][2][1] - priceBox['points'][0][1]) *
+                        scaleFactorHeight;
+
+                return Positioned(
+                  left: left,
+                  top: top,
+                  child: GestureDetector(
+                    onTap: () {
+                      _onTapPriceBox(priceBox['priceValue']);
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                          width: boxWidth,
+                          height: boxHeight,
+                          color: Colors.white.withOpacity(0.5),
+                          child: Center(
+                            child: Text(
+                              priceBox['priceValue'] + '원',
+                              style: const TextStyle(
+                                fontSize: Sizes.size20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (_exchangedPrice != 0)
+                          Container(
+                            width: boxWidth,
+                            height: boxHeight,
+                            color: Colors.white.withOpacity(0.5),
+                            child: Expanded(
+                              child: Row(
+                                children: [
+                                  CountryFlag.fromCountryCode(
+                                    selectedLanguage.name == 'english'
+                                        ? 'US'
+                                        : selectedLanguage.name == 'japanese'
+                                            ? 'JP'
+                                            : 'CN',
+                                    width: Sizes.size20,
+                                    height: Sizes.size20,
+                                  ),
+                                  Text(
+                                    '(\$${_exchangedPrice.toStringAsFixed(2)})',
+                                    style: const TextStyle(
+                                      fontSize: Sizes.size20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
             ],
           );
         },
