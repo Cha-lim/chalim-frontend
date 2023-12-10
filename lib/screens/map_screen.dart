@@ -1,5 +1,6 @@
 import 'package:chalim/constants/gaps.dart';
 import 'package:chalim/constants/sizes.dart';
+import 'package:chalim/screens/wordcloud_screen.dart';
 import 'package:chalim/services/current_location.dart';
 import 'package:chalim/services/restaurants_fetching.dart';
 import 'package:chalim/widgets/loading_bar.dart';
@@ -9,12 +10,19 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MapScreen extends StatelessWidget {
-  const MapScreen({super.key});
+  const MapScreen(this.menuName, {super.key});
 
-  void _onRestaurantTapped(BuildContext context) {
+  final List<dynamic> menuName;
+
+  void _onRestaurantTapped(
+    BuildContext context, {
+    required String restaurantName,
+    required List<dynamic> menuNames,
+  }) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => Container(),
+        builder: (context) => WordcloudScreen(
+            restaurantName: restaurantName, menuNames: menuNames),
       ),
     );
   }
@@ -67,7 +75,7 @@ class MapScreen extends StatelessWidget {
 
           return FutureBuilder(
             future: RestaurantsFetching.fetchRestaurants(
-              keyword: '김밥',
+              keyword: '식당',
               lat: location['latitude']!,
               long: location['longitude']!,
             ),
@@ -98,7 +106,9 @@ class MapScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      _onRestaurantTapped(context);
+                      _onRestaurantTapped(context,
+                          restaurantName: restaurants[index].name,
+                          menuNames: menuName);
                     },
                     child: ListTile(
                       title: Text(

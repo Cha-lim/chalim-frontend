@@ -99,14 +99,6 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     super.dispose();
   }
 
-  void _navigateToWordcloudScreen(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const MapScreen(),
-      ),
-    );
-  }
-
   //이미지를 가져오는 함수
   void _getImage(ImageSource imageSource) async {
     //pickedFile에 ImagePicker로 가져온 이미지가 담긴다.
