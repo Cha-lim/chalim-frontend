@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:chalim/models/restaurant.dart';
 
 class RestaurantsFetching {
-  static const String baseUrl = 'https://0347-223-62-188-75.ngrok-free.app';
+  static const String baseUrl = 'https://2e3e-114-206-33-35.ngrok-free.app';
 
   static Future<List<Restaurant>> fetchRestaurants({
     required String keyword,
@@ -14,6 +14,7 @@ class RestaurantsFetching {
     List<Restaurant> restaurants = [];
     var url = Uri.parse('$baseUrl/restaurant-name');
 
+    print('keyword: $keyword');
     var response = await http.post(
       url,
       headers: {
@@ -21,7 +22,7 @@ class RestaurantsFetching {
         "Content-Type": "application/json",
       },
       body: json.encode({
-        'keyword': keyword,
+        'keyword': '식당',
         'y': lat,
         'x': long,
       }),

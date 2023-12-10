@@ -8,7 +8,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'dart:io';
+
 import 'package:image/image.dart' as img;
 
 // screens
@@ -46,6 +46,9 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
 
   late Future<dynamic> _translateFuture;
 
+  List<dynamic> menuList = [];
+
+  int _selectedPriceIndex = -1;
   num _exchangedPrice = 0;
 
   @override
@@ -73,12 +76,14 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
   void _navigateToWordcloudScreen(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const MapScreen(),
+        builder: (context) => MapScreen(menuList),
       ),
     );
   }
 
-  void _onTapPriceBox(dynamic priceValue) async {
+  void _onTapMenuBox() {}
+
+  void _onTapPriceBox(dynamic priceValue, int index) async {
     print('priceValue: $priceValue');
 
     print(ref.read(languageSelectProvider).name);
@@ -102,12 +107,15 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
     }
     setState(() {
       _exchangedPrice = exchangedPrice;
+      _selectedPriceIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     Language selectedLanguage = ref.watch(languageSelectProvider);
+
+    const scale = 0.7;
 
     return Scaffold(
       appBar: AppBar(
@@ -141,17 +149,39 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
             );
           }
           if (!snapshot.hasData || snapshot.hasError) {
-            return const Text('오류가 발생했습니다.');
+            return Center(
+              child: Text(
+                '오류가 발생했습니다.',
+                style: TextStyle(
+                  fontSize: Sizes.size20,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+            );
           }
 
           if (snapshot.data['menu'] == null || snapshot.data['price'] == null) {
-            return const Text('메뉴와 가격을 인식하지 못했습니다.');
+            return Center(
+              child: Text(
+                '메뉴를 찾을 수 없습니다.',
+                style: TextStyle(
+                  fontSize: Sizes.size20,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+            );
           }
 
           final boxes = snapshot.data;
 
           final menuBoxes = boxes['menu'] as List<dynamic>;
           final priceBoxes = boxes['price'] as List<dynamic>;
+
+          menuList = menuBoxes.map((menuBox) {
+            return menuBox['transcription'];
+          }).toList();
 
           final deviceWidth = MediaQuery.of(context).size.width;
           final deviceHeight = MediaQuery.of(context).size.height;
@@ -184,17 +214,23 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
                 return Positioned(
                   left: left,
                   top: top,
-                  child: GestureDetector(
+                  child: InkWell(
                     onTap: () {},
                     child: Container(
                       width: boxWidth,
                       height: boxHeight,
-                      color: Colors.white.withOpacity(0.5),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.8),
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 184, 0, 144),
+                          width: Sizes.size2,
+                        ),
+                      ),
                       child: Center(
                         child: Text(
                           menuBox['transcription'],
-                          style: const TextStyle(
-                            fontSize: Sizes.size20,
+                          style: TextStyle(
+                            fontSize: boxHeight * scale * 0.8,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -203,72 +239,123 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
                   ),
                 );
               }).toList(),
-              ...priceBoxes.map((priceBox) {
-                final double left = priceBox['points'][0][0] * scaleFactorWidth;
-                final double top = priceBox['points'][0][1] * scaleFactorHeight;
-                final double boxWidth =
-                    (priceBox['points'][1][0] - priceBox['points'][0][0]) *
-                        scaleFactorWidth;
-                final double boxHeight =
-                    (priceBox['points'][2][1] - priceBox['points'][0][1]) *
-                        scaleFactorHeight;
+              ...priceBoxes
+                  .asMap()
+                  .map(
+                    (index, priceBox) {
+                      final double left =
+                          priceBox['points'][0][0] * scaleFactorWidth;
+                      final double top =
+                          priceBox['points'][0][1] * scaleFactorHeight;
+                      final double boxWidth = (priceBox['points'][1][0] -
+                              priceBox['points'][0][0]) *
+                          scaleFactorWidth;
+                      final double boxHeight = (priceBox['points'][2][1] -
+                              priceBox['points'][0][1]) *
+                          scaleFactorHeight;
 
-                return Positioned(
-                  left: left,
-                  top: top,
-                  child: GestureDetector(
-                    onTap: () {
-                      _onTapPriceBox(priceBox['priceValue']);
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          width: boxWidth,
-                          height: boxHeight,
-                          color: Colors.white.withOpacity(0.5),
-                          child: Center(
-                            child: Text(
-                              priceBox['priceValue'] + '원',
-                              style: const TextStyle(
-                                fontSize: Sizes.size20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      return MapEntry(
+                        index,
+                        Positioned(
+                          left: left,
+                          top: top,
+                          child: InkWell(
+                            onTap: () =>
+                                _onTapPriceBox(priceBox['priceValue'], index),
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: boxWidth,
+                                  height: boxHeight,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: const Color.fromARGB(
+                                          255, 184, 0, 144),
+                                      width: Sizes.size2,
+                                    ),
+                                  ),
+                                ),
+                                if (_exchangedPrice != 0 &&
+                                    _selectedPriceIndex == index)
+                                  Container(
+                                    width: boxWidth,
+                                    height: boxHeight,
+                                    color: Theme.of(context).primaryColor,
+                                    child: Stack(
+                                      children: [
+                                        if (selectedLanguage.name == 'english')
+                                          Positioned(
+                                            left: boxWidth * scale * 0.1,
+                                            child: Text(
+                                              '\$',
+                                              style: TextStyle(
+                                                fontSize: boxHeight * scale,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          )
+                                        else if (selectedLanguage.name ==
+                                            'japanese')
+                                          Positioned(
+                                            left: boxWidth * scale * 0.1,
+                                            child: Text(
+                                              '¥',
+                                              style: TextStyle(
+                                                fontSize: boxHeight * scale,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          )
+                                        else if (selectedLanguage.name ==
+                                            'chinese')
+                                          Positioned(
+                                            left: boxWidth * scale * 0.1,
+                                            child: Text(
+                                              '¥',
+                                              style: TextStyle(
+                                                fontSize: boxHeight * scale,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              _exchangedPrice
+                                                  .toStringAsFixed(0),
+                                              style: TextStyle(
+                                                fontSize: boxHeight * scale,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            CountryFlag.fromCountryCode(
+                                              selectedLanguage.name == 'english'
+                                                  ? 'US'
+                                                  : selectedLanguage.name ==
+                                                          'japanese'
+                                                      ? 'JP'
+                                                      : 'CN',
+                                              width: boxWidth * scale * 0.5,
+                                              height: boxHeight * scale,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
                         ),
-                        if (_exchangedPrice != 0)
-                          Container(
-                            width: boxWidth,
-                            height: boxHeight,
-                            color: Colors.white.withOpacity(0.5),
-                            child: Expanded(
-                              child: Row(
-                                children: [
-                                  CountryFlag.fromCountryCode(
-                                    selectedLanguage.name == 'english'
-                                        ? 'US'
-                                        : selectedLanguage.name == 'japanese'
-                                            ? 'JP'
-                                            : 'CN',
-                                    width: Sizes.size20,
-                                    height: Sizes.size20,
-                                  ),
-                                  Text(
-                                    '(\$${_exchangedPrice.toStringAsFixed(2)})',
-                                    style: const TextStyle(
-                                      fontSize: Sizes.size20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
+                      );
+                    },
+                  )
+                  .values
+                  .toList(),
             ],
           );
         },
