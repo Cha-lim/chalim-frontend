@@ -26,6 +26,14 @@ class HomeScreen extends StatelessWidget {
 
   final Language selectedLanguage;
 
+  void _onTapNavigateToCameraScreen(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctx) => const CameraScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,11 +60,7 @@ class HomeScreen extends StatelessWidget {
                       const SizedBox(height: Sizes.size40),
                       IconButton(
                         onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (ctx) => const CameraScreen(),
-                            ),
-                          );
+                          _onTapNavigateToCameraScreen(context);
                         },
                         icon: FaIcon(
                           FontAwesomeIcons.camera,

@@ -1,4 +1,5 @@
 // flutter
+import 'package:chalim/screens/menu_description_screen.dart';
 import 'package:chalim/services/get_exchange_rate.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +50,7 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
   List<dynamic> menuList = [];
 
   int _selectedPriceIndex = -1;
+  final int _selectedMenuIndex = -1;
   num _exchangedPrice = 0;
 
   @override
@@ -81,13 +83,22 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
     );
   }
 
-  void _onTapMenuBox() {}
+  void _onTapMenuBox({
+    required String menuNameKorean,
+    required String menuNameForeign,
+    required int index,
+  }) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => MenuDescriptionScreen(
+          menuNameKorean: menuNameKorean,
+          menuNameForeign: menuNameForeign,
+        ),
+      ),
+    );
+  }
 
   void _onTapPriceBox(dynamic priceValue, int index) async {
-    print('priceValue: $priceValue');
-
-    print(ref.read(languageSelectProvider).name);
-
     num exchangedPrice = 0;
     if (ref.read(languageSelectProvider).name == 'english') {
       exchangedPrice = await ExchangeRate.getExchangeRate(
@@ -201,44 +212,57 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
                   fit: BoxFit.fill,
                 ),
               ),
-              ...menuBoxes.map((menuBox) {
-                final double left = menuBox['points'][0][0] * scaleFactorWidth;
-                final double top = menuBox['points'][0][1] * scaleFactorHeight;
-                final double boxWidth =
-                    (menuBox['points'][1][0] - menuBox['points'][0][0]) *
-                        scaleFactorWidth;
-                final double boxHeight =
-                    (menuBox['points'][2][1] - menuBox['points'][0][1]) *
-                        scaleFactorHeight;
+              ...menuBoxes
+                  .asMap()
+                  .map((index, menuBox) {
+                    final double left =
+                        menuBox['points'][0][0] * scaleFactorWidth;
+                    final double top =
+                        menuBox['points'][0][1] * scaleFactorHeight;
+                    final double boxWidth =
+                        (menuBox['points'][1][0] - menuBox['points'][0][0]) *
+                            scaleFactorWidth;
+                    final double boxHeight =
+                        (menuBox['points'][2][1] - menuBox['points'][0][1]) *
+                            scaleFactorHeight;
 
-                return Positioned(
-                  left: left,
-                  top: top,
-                  child: InkWell(
-                    onTap: () {},
-                    child: Container(
-                      width: boxWidth,
-                      height: boxHeight,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
-                        border: Border.all(
-                          color: const Color.fromARGB(255, 184, 0, 144),
-                          width: Sizes.size2,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          menuBox['transcription'],
-                          style: TextStyle(
-                            fontSize: boxHeight * scale * 0.8,
-                            fontWeight: FontWeight.bold,
+                    return MapEntry(
+                      index,
+                      Positioned(
+                        left: left,
+                        top: top,
+                        child: InkWell(
+                          onTap: () => _onTapMenuBox(
+                            menuNameKorean: menuBox['origin'],
+                            menuNameForeign: menuBox['transcription'],
+                            index: index,
+                          ),
+                          child: Container(
+                            width: boxWidth,
+                            height: boxHeight,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.8),
+                              border: Border.all(
+                                color: const Color.fromARGB(255, 184, 0, 144),
+                                width: Sizes.size2,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                menuBox['transcription'],
+                                style: TextStyle(
+                                  fontSize: boxHeight * scale * 0.8,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                );
-              }).toList(),
+                    );
+                  })
+                  .values
+                  .toList(),
               ...priceBoxes
                   .asMap()
                   .map(

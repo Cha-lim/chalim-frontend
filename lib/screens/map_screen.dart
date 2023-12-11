@@ -75,7 +75,6 @@ class MapScreen extends StatelessWidget {
 
           return FutureBuilder(
             future: RestaurantsFetching.fetchRestaurants(
-              keyword: '식당',
               lat: location['latitude']!,
               long: location['longitude']!,
             ),
@@ -118,10 +117,12 @@ class MapScreen extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      subtitle: Text('${restaurants[index].distance}m',
-                          style: const TextStyle(
-                            color: Colors.white,
-                          )),
+                      subtitle: Text(
+                        '${restaurants[index].distance}m',
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   );
                 },

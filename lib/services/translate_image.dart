@@ -22,7 +22,7 @@ class TranslateImage {
       "imageName": "$imageFileName.jpg",
       "imageFile": await MultipartFile.fromFile(
         image.path,
-      )
+      ),
     });
 
     print(imageFileName);
