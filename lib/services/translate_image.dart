@@ -1,19 +1,19 @@
 import 'package:camera/camera.dart';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import 'package:uuid/uuid.dart';
 
 // providers
-import 'package:chalim/providers/language_provider.dart';
 
 class TranslateImage {
   static const uuid = Uuid();
 
   static final Dio dio = Dio(BaseOptions(
-    baseUrl: dotenv.env['TRANSLATE_IMAGE_SERVICE_URL']!,
-    connectTimeout: const Duration(seconds: 30),
-    receiveTimeout: const Duration(minutes: 2),
+    baseUrl: 'http://192.168.219.106:5001',
+    connectTimeout: const Duration(minutes: 30),
+    receiveTimeout: const Duration(minutes: 30),
+    sendTimeout: const Duration(minutes: 30),
     persistentConnection: true,
   ));
 

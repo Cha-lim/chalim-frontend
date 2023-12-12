@@ -8,9 +8,11 @@ class LoadingBar extends StatelessWidget {
   const LoadingBar({
     super.key,
     required this.message,
+    this.isTextWhite = false,
   });
 
   final String message;
+  final bool isTextWhite;
 
   @override
   Widget build(BuildContext context) {
@@ -19,14 +21,15 @@ class LoadingBar extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           LoadingAnimationWidget.dotsTriangle(
-            color: Theme.of(context).primaryColor,
+            color: isTextWhite ? Colors.white : Theme.of(context).primaryColor,
             size: Sizes.size32,
           ),
           Gaps.v10,
           Text(
             message,
             style: TextStyle(
-              color: Theme.of(context).primaryColor,
+              color:
+                  isTextWhite ? Colors.white : Theme.of(context).primaryColor,
               fontSize: Sizes.size20,
             ),
           ),

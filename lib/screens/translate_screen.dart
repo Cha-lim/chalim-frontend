@@ -1,6 +1,7 @@
 // flutter
 import 'package:chalim/screens/menu_description_screen.dart';
 import 'package:chalim/services/get_exchange_rate.dart';
+import 'package:chalim/widgets/error_message.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -50,7 +51,7 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
   List<dynamic> menuList = [];
 
   int _selectedPriceIndex = -1;
-  final int _selectedMenuIndex = -1;
+
   num _exchangedPrice = 0;
 
   @override
@@ -138,16 +139,11 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
               _navigateToWordcloudScreen(context);
             },
             icon: const FaIcon(
-              FontAwesomeIcons.solidStar,
+              FontAwesomeIcons.mapLocation,
               size: Sizes.size28,
             ),
           ),
-          Gaps.h10,
-          const FaIcon(
-            FontAwesomeIcons.ellipsis,
-            size: Sizes.size28,
-          ),
-          Gaps.h10,
+          Gaps.h20,
         ],
         elevation: 5,
       ),
@@ -156,33 +152,16 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const LoadingBar(
-              message: '차림상을 준비 중입니다.',
+              message: 'Translating menu...',
+              isTextWhite: false,
             );
           }
           if (!snapshot.hasData || snapshot.hasError) {
-            return Center(
-              child: Text(
-                '오류가 발생했습니다.',
-                style: TextStyle(
-                  fontSize: Sizes.size20,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-            );
+            return const ErrorMessage();
           }
 
           if (snapshot.data['menu'] == null || snapshot.data['price'] == null) {
-            return Center(
-              child: Text(
-                '메뉴를 찾을 수 없습니다.',
-                style: TextStyle(
-                  fontSize: Sizes.size20,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-            );
+            return const ErrorMessage();
           }
 
           final boxes = snapshot.data;
@@ -191,7 +170,7 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
           final priceBoxes = boxes['price'] as List<dynamic>;
 
           menuList = menuBoxes.map((menuBox) {
-            return menuBox['transcription'];
+            return menuBox['origin'];
           }).toList();
 
           final deviceWidth = MediaQuery.of(context).size.width;
@@ -243,16 +222,21 @@ class _TranslateScreenState extends ConsumerState<TranslateScreen> {
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.8),
                               border: Border.all(
-                                color: const Color.fromARGB(255, 184, 0, 144),
+                                color: Theme.of(context).primaryColor,
                                 width: Sizes.size2,
                               ),
                             ),
                             child: Center(
-                              child: Text(
-                                menuBox['transcription'],
-                                style: TextStyle(
-                                  fontSize: boxHeight * scale * 0.8,
-                                  fontWeight: FontWeight.bold,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  menuBox['transcription'],
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ),

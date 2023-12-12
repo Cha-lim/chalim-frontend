@@ -11,6 +11,7 @@ import 'package:chalim/screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await dotenv.load(fileName: ".env");
 
   runApp(const ProviderScope(child: MyApp()));

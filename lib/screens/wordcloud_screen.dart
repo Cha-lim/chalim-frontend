@@ -1,12 +1,8 @@
-import 'package:chalim/constants/gaps.dart';
-import 'package:chalim/constants/sizes.dart';
 import 'package:chalim/services/word_cloud.dart';
 import 'package:chalim/widgets/loading_bar.dart';
 import 'package:chalim/widgets/select_language_button.dart';
 
 import 'package:flutter/material.dart';
-
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class WordcloudScreen extends StatelessWidget {
   const WordcloudScreen({
@@ -26,13 +22,6 @@ class WordcloudScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: const SelectLanguageButton(),
-        actions: const [
-          FaIcon(
-            FontAwesomeIcons.ellipsis,
-            size: Sizes.size28,
-          ),
-          Gaps.h10,
-        ],
       ),
       body: FutureBuilder(
         future: WordCloud.getWordCloud(
@@ -51,10 +40,9 @@ class WordcloudScreen extends StatelessWidget {
               ],
             );
           } else {
-            return const Center(
-              child: LoadingBar(
-                message: '차림상 추천을 준비 중입니다.',
-              ),
+            return const LoadingBar(
+              message: '차림상 추천을 준비 중입니다.',
+              isTextWhite: false,
             );
           }
         },
