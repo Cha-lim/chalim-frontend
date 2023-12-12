@@ -1,9 +1,10 @@
 import 'package:chalim/models/menu_description.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ServiceMenuDescription {
   static final Dio dio = Dio(BaseOptions(
-    baseUrl: 'https://5b92-180-69-240-120.ngrok.io',
+    baseUrl: dotenv.env['MENU_DESCRIPTION_SERVICE_URL']!,
     connectTimeout: const Duration(seconds: 30),
     receiveTimeout: const Duration(minutes: 2),
     persistentConnection: true,

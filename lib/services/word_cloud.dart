@@ -1,10 +1,11 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
 class WordCloud {
   static final Dio dio = Dio(BaseOptions(
-    baseUrl: 'https://2e3e-114-206-33-35.ngrok-free.app',
+    baseUrl: dotenv.env['WORDCLOUD_SERVICE_URL']!,
     connectTimeout: const Duration(seconds: 5),
     receiveTimeout: const Duration(seconds: 3),
   ));

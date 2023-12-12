@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class MenuDescriptionScreen extends ConsumerWidget {
+class MenuDescriptionScreen extends ConsumerStatefulWidget {
   const MenuDescriptionScreen({
     super.key,
     required this.menuNameKorean,
@@ -20,7 +20,15 @@ class MenuDescriptionScreen extends ConsumerWidget {
   final String menuNameForeign;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _MenuDescriptionScreenState();
+}
+
+class _MenuDescriptionScreenState extends ConsumerState<MenuDescriptionScreen> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  Widget build(BuildContext context) {
     Language language = ref.read(languageSelectProvider);
 
     return Scaffold(
@@ -38,71 +46,108 @@ class MenuDescriptionScreen extends ConsumerWidget {
       backgroundColor: Theme.of(context).primaryColor,
       body: FutureBuilder(
         future: ServiceMenuDescription.getMenuDescription(
-          menuNameKorean,
+          widget.menuNameKorean,
           language.name.toLowerCase(),
         ),
         builder: (context, snapshot) {
-          return snapshot.connectionState == ConnectionState.waiting
-              ? const LoadingBar(
-                  message: '차림 메뉴 설명을 불러오는 중입니다.',
-                )
-              : SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(
-                          top: Sizes.size20,
-                          left: Sizes.size20,
-                          right: Sizes.size20,
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const LoadingBar(
+              message: '메뉴 설명을 가져오는 중입니다.',
+            );
+          }
+          if (snapshot.hasError) {
+            return const Center(
+              child: Text(
+                '메뉴 설명을 가져오지 못했습니다.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: Sizes.size20,
+                ),
+              ),
+            );
+          }
+          if (!snapshot.hasData) {
+            return const Center(
+              child: Text(
+                '차림 설명을 가져오지 못했습니다.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: Sizes.size20,
+                ),
+              ),
+            );
+          }
+
+          if (snapshot.hasData) {
+            final MenuDescription menuDescription = snapshot.data!;
+            return Scrollbar(
+              controller: _scrollController,
+              interactive: true,
+              thumbVisibility: true,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          widget.menuNameForeign,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: Sizes.size32,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              menuNameKorean,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: Sizes.size20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              menuNameForeign,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: Sizes.size16,
-                              ),
-                            ),
-                            Gaps.v10,
-                            Text(
-                              (snapshot.data as MenuDescription).description,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: Sizes.size16,
-                              ),
-                            ),
-                            Gaps.v10,
-                            Text(
-                              (snapshot.data as MenuDescription).history,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: Sizes.size16,
-                              ),
-                            ),
-                            Gaps.v10,
-                            Text(
-                              (snapshot.data as MenuDescription).ingredients,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: Sizes.size16,
-                              ),
-                            ),
-                          ],
+                        Text(
+                          widget.menuNameKorean,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: Sizes.size20,
+                          ),
                         ),
+                      ],
+                    ),
+                    Gaps.v32,
+                    Text(
+                      menuDescription.description,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: Sizes.size24,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ),
-                );
+                    ),
+                    Gaps.v32,
+                    Text(
+                      menuDescription.history,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: Sizes.size24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Gaps.v32,
+                    Text(
+                      menuDescription.ingredients,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: Sizes.size24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          return const Center(
+            child: Text(
+              '메뉴 설명을 가져오지 못했습니다.',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: Sizes.size20,
+              ),
+            ),
+          );
         },
       ),
     );
