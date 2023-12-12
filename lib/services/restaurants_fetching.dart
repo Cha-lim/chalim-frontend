@@ -1,10 +1,11 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:chalim/models/restaurant.dart';
 
 class RestaurantsFetching {
-  static const String baseUrl = 'https://2e3e-114-206-33-35.ngrok-free.app';
+  static String baseUrl = dotenv.env['RESTAURANT_SERVICE_URL']!;
 
   static Future<List<Restaurant>> fetchRestaurants({
     required double lat,

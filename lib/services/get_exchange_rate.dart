@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ExchangeRate {
   static final Dio dio = Dio(BaseOptions(
-    baseUrl:
-        'https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/krw',
+    baseUrl: dotenv.env['EXCHANGE_RATE_SERVICE_URL']!,
     connectTimeout: const Duration(seconds: 5),
     receiveTimeout: const Duration(seconds: 3),
   ));
