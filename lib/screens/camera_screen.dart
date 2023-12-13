@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 
 // libraries
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 import 'package:camera/camera.dart';
 
 import 'package:image_picker/image_picker.dart';
 
 // screens
-import 'package:chalim/screens/map_screen.dart';
+
 import 'package:chalim/screens/translate_screen.dart';
 
 // widgets
@@ -18,8 +18,6 @@ import 'package:chalim/widgets/photo_icon.dart';
 import 'package:chalim/widgets/select_language_button.dart';
 
 // constants
-import 'package:chalim/constants/sizes.dart';
-import 'package:chalim/constants/gaps.dart';
 
 // providers
 
@@ -71,6 +69,15 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     super.initState();
     _initializeControllerFuture = Future.value();
     _startCamera();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      const snackBar = SnackBar(
+        content: Center(child: Text('Take a vertical picture of the menu.')),
+        duration: Duration(seconds: 2),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
   }
 
   void _startCamera() async {
@@ -132,13 +139,6 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: const SelectLanguageButton(),
-        actions: const [
-          FaIcon(
-            FontAwesomeIcons.ellipsis,
-            size: Sizes.size28,
-          ),
-          Gaps.h10,
-        ],
       ),
       body: Stack(
         children: [

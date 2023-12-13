@@ -11,9 +11,14 @@ class MenuDescription {
 
   factory MenuDescription.fromJson(Map<String, dynamic> json) {
     return MenuDescription(
-      description: json['description'],
-      history: json['history'],
-      ingredients: json['ingredients'],
+      description: sanitizeString(json['description']),
+      history: sanitizeString(json['history']),
+      ingredients: sanitizeString(json['ingredients']),
     );
+  }
+
+  static String sanitizeString(String input) {
+    final pattern = RegExp('[\\/]');
+    return input.replaceAll(pattern, '');
   }
 }

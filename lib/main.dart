@@ -11,6 +11,7 @@ import 'package:chalim/screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await dotenv.load(fileName: ".env");
 
   runApp(const ProviderScope(child: MyApp()));
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
+      debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
     );
   }

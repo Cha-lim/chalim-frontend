@@ -1,44 +1,50 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 import 'package:chalim/models/restaurant.dart';
 
 class RestaurantsFetching {
-  static String baseUrl = dotenv.env['RESTAURANT_SERVICE_URL']!;
+  static Dio dio = Dio(BaseOptions(
+    baseUrl: 'https://CHALIM.apps.sys.paas-ta-dev10.kr',
+    connectTimeout: const Duration(seconds: 30),
+    receiveTimeout: const Duration(minutes: 2),
+    persistentConnection: true,
+  ));
 
   static Future<List<Restaurant>> fetchRestaurants({
     required double lat,
     required double long,
   }) async {
     List<Restaurant> restaurants = [];
-    var url = Uri.parse('$baseUrl/restaurant-name');
 
-    var response = await http.post(
-      url,
-      headers: {
-        "accept": "application/json",
-        "Content-Type": "application/json",
-      },
-      body: json.encode({
-        'y': lat,
-        'x': long,
-      }),
-    );
+    try {
+      Response response = await dio.request(
+        '/restaurant-name',
+        data: {
+          'y': lat,
+          'x': long,
+        },
+        options: Options(method: 'POST'),
+      );
 
-    print('lat: $lat, long: $long');
+      print('real Uri: ${response.realUri}');
 
-    if (response.statusCode == 200) {
-      final restaurantsJson =
-          json.decode(utf8.decode(response.bodyBytes))['documents'];
+      if (response.statusCode == 200) {
+        final restaurantsList = response.data['documents'];
 
-      for (var restaurantJson in restaurantsJson) {
-        restaurants.add(Restaurant.fromJson(restaurantJson));
+        print(restaurantsList);
+
+        for (var restaurant in restaurantsList) {
+          restaurants.add(Restaurant.fromJson(restaurant));
+        }
+        return restaurants;
+      } else {
+        print("Error during file upload: ${response.statusCode}");
+        return restaurants;
       }
-
+    } catch (e) {
+      print("Error during file upload: $e");
       return restaurants;
-    } else {
-      throw Exception('Failed to load restaurants');
     }
   }
 }
