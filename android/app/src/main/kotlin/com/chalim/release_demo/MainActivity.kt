@@ -1,4 +1,4 @@
-package com.example.chalim
+package com.chalim.release_demo
 
 import io.flutter.embedding.android.FlutterActivity
 import android.os.Bundle
