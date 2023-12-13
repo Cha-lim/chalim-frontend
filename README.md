@@ -1,22 +1,24 @@
-# chalim
+앱 설치법
 
-<img src="https://github.com/Cha-lim/chalim-frontend/assets/86235780/693f727e-ad97-4974-ad97-6a2a33a43f87" width="200" height="400"/>
-<img src="https://github.com/Cha-lim/chalim-frontend/assets/86235780/29d8e10d-2133-4b38-8ab2-02badda0fe33" width="200" height="400"/>
-<img src="https://github.com/Cha-lim/chalim-frontend/assets/86235780/8021fe5f-1120-4248-8187-f083dd0aa0a2" width="200" height="400"/>
-<img src="https://github.com/Cha-lim/chalim-frontend/assets/86235780/f8b7d40e-69e3-4a14-8c75-e539bdb97ebf" width="200" height="400"/>
-<img src="https://github.com/Cha-lim/chalim-frontend/assets/86235780/c493f278-9c4a-4f86-b4e5-1f338bff48e4" width="200" height="400"/>
-<img src="https://github.com/Cha-lim/chalim-frontend/assets/86235780/4fa4d9bb-8f73-4c68-b23e-dde280e1adc5" width="200" height="400"/>
-<img src="https://github.com/Cha-lim/chalim-frontend/assets/86235780/d1efc722-f288-4d84-821b-dad526ae7cc0" width="200" height="400"/>
+1.우선 아래에 링크에 들어가서 각 운영체제 맞는 flutter sdk를 설치합니다.  
+https://docs.flutter.dev/get-started/install
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+2. 설치 후 이 레포지토리를 git clone 합니다.  
 
-A few resources to get you started if this is your first Flutter project:
+3. 핸드폰 기기와 컴퓨터를 usb로 연결합니다.  
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+4. 다음 명령어를 순서대로 입력합니다.  
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+cd chalim  
+flutter install  
+<img src="https://github.com/Cha-lim/chalim-frontend/assets/86235780/5079cf69-e641-47e5-8d49-fd711cdf51e2" width="200" height="400"/>
+<img src="https://github.com/Cha-lim/chalim-frontend/assets/86235780/9408936b-8551-461d-ba97-3a0f70d5a501" width="200" height="400"/>
+<img src="https://github.com/Cha-lim/chalim-frontend/assets/86235780/2dcbf046-6587-4d3e-9ad8-0fcab7f7cd60" width="200" height="400"/>
+<img src="https://github.com/Cha-lim/chalim-frontend/assets/86235780/d766f58e-8b62-4714-934e-4c3d572d21ee" width="200" height="400"/>
+<img src="https://github.com/Cha-lim/chalim-frontend/assets/86235780/e43c8abb-43af-4145-8131-361a9a14f4bc" width="200" height="400"/>
+<img src="https://github.com/Cha-lim/chalim-frontend/assets/86235780/b97a5d1b-69a7-477d-b450-60ce897bd9ee" width="200" height="400"/>
+<img src="https://github.com/Cha-lim/chalim-frontend/assets/86235780/9e20a86a-a52a-4b92-a6b2-fd8cf3eefd96" width="200" height="400"/>
+
+
+
