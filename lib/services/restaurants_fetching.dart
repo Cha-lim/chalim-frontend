@@ -5,7 +5,7 @@ import 'package:chalim/models/restaurant.dart';
 
 class RestaurantsFetching {
   static Dio dio = Dio(BaseOptions(
-    baseUrl: dotenv.get('RESTAURANT_SERVICE_URL'),
+    baseUrl: 'https://CHALIM.apps.sys.paas-ta-dev10.kr',
     connectTimeout: const Duration(seconds: 30),
     receiveTimeout: const Duration(minutes: 2),
     persistentConnection: true,
@@ -21,7 +21,6 @@ class RestaurantsFetching {
       Response response = await dio.request(
         '/restaurant-name',
         data: {
-          "keyword": "식당",
           'y': lat,
           'x': long,
         },

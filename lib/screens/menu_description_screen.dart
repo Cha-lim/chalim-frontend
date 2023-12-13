@@ -45,13 +45,6 @@ class _MenuDescriptionScreenState extends ConsumerState<MenuDescriptionScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: const SelectLanguageButton(),
-        actions: const [
-          FaIcon(
-            FontAwesomeIcons.ellipsis,
-            size: Sizes.size28,
-          ),
-          Gaps.h10,
-        ],
       ),
       backgroundColor: Theme.of(context).primaryColor,
       body: FutureBuilder(

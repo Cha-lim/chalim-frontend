@@ -10,7 +10,7 @@ class TranslateImage {
   static const uuid = Uuid();
 
   static final Dio dio = Dio(BaseOptions(
-    baseUrl: 'http://192.168.219.106:5001',
+    baseUrl: 'http://34.64.33.240:80',
     connectTimeout: const Duration(minutes: 30),
     receiveTimeout: const Duration(minutes: 30),
     sendTimeout: const Duration(minutes: 30),

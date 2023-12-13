@@ -35,7 +35,7 @@ class WordcloudScreen extends StatelessWidget {
                 Text(' $restaurantName의 차림상 추천',
                     style: Theme.of(context).textTheme.displayLarge),
                 Image.file(
-                  snapshot.data,
+                  snapshot.data!,
                 ),
               ],
             );

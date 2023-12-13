@@ -69,6 +69,15 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     super.initState();
     _initializeControllerFuture = Future.value();
     _startCamera();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      const snackBar = SnackBar(
+        content: Center(child: Text('Take a vertical picture of the menu.')),
+        duration: Duration(seconds: 2),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
   }
 
   void _startCamera() async {

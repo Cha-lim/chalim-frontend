@@ -5,12 +5,12 @@ import 'dart:io';
 
 class WordCloud {
   static final Dio dio = Dio(BaseOptions(
-    baseUrl: 'https://390b-114-206-33-35.ngrok-free.app',
+    baseUrl: 'https://CHALIM.apps.sys.paas-ta-dev10.kr',
     connectTimeout: const Duration(seconds: 5),
     receiveTimeout: const Duration(seconds: 3),
   ));
 
-  static Future<dynamic> getWordCloud({
+  static Future<File> getWordCloud({
     required String restaurantName,
     required List<dynamic> menuNames,
   }) async {
@@ -44,10 +44,13 @@ class WordCloud {
         return file;
       } else {
         print("Error: ${response.statusCode}");
+        print('Error: ${response.data}');
+
+        return File('');
       }
     } catch (e) {
       print(e);
     }
-    return "";
+    return File('');
   }
 }
