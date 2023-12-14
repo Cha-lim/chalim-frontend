@@ -30,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double scaleFactor = MediaQuery.of(context).size.width / 400;
+    double scaleFactor = MediaQuery.of(context).size.width / 500;
 
     return Scaffold(
       body: Container(
@@ -60,11 +60,11 @@ class _SplashScreenState extends State<SplashScreen> {
                   width: 200 * scaleFactor,
                 ),
                 const SizedBox(height: Sizes.size20),
-                Text(
+                const Text(
                   'Menu Translation Service',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: Sizes.size20 * scaleFactor,
+                    fontSize: Sizes.size20,
                     fontFamily: 'Myriad Pro',
                     fontWeight: FontWeight.normal,
                   ),
