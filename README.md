@@ -1,19 +1,12 @@
 K-paas 활용 디지털 사회혁신 서비스개발 아이디어 공모전 출품작입니다.
 
 ktj (김태정) 담당자님 께서는 아래의 링크로 접속하셔서 다운받으실 수 있습니다.(안드로이드 기기여야 합니다.) 혹시 다른 구글 플레이 스토어 계정으로 로그인하셔야 한다면 연락주세요. (내부 테스트 링크)  
+구글 플레이스토어 링크:
 https://play.google.com/apps/internaltest/4701023389491920673  
 
-앱 설치법
+앱 직접 설치법
 
-1.우선 아래에 링크에 들어가서 각 운영체제 맞는 flutter sdk를 설치합니다.  
-https://docs.flutter.dev/get-started/install
-
-
-2. 설치 후 이 레포지토리를 git clone 합니다.  
-
-3. 핸드폰 기기와 컴퓨터를 usb로 연결합니다.  
-
-4. 다음 명령어를 순서대로 입력합니다.  
+release/app-release.apk 파일을 안드로이드폰에 옮긴 후 설치.
 
 cd chalim  
 flutter install  
