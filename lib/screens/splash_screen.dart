@@ -30,6 +30,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double scaleFactor = MediaQuery.of(context).size.width / 500;
+
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.symmetric(
@@ -43,11 +45,11 @@ class _SplashScreenState extends State<SplashScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Spacer(),
-                const Text(
+                Text(
                   'Chalim',
                   style: TextStyle(
                     fontFamily: 'Bauhaus LT Heavy',
-                    fontSize: Sizes.size72,
+                    fontSize: Sizes.size72 * scaleFactor,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -55,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 const SizedBox(height: Sizes.size20),
                 Image.asset(
                   'assets/images/logo.png',
-                  width: 200,
+                  width: 200 * scaleFactor,
                 ),
                 const SizedBox(height: Sizes.size20),
                 const Text(
